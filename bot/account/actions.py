@@ -20,6 +20,7 @@ def login(browser):
     # If instagram asks us to "save details" we say ok
     while FINAL_URL != browser.current_url:
         if 'onetap' in browser.current_url:
+            time.sleep(1)
             browser.find_element_by_tag_name('button').click()
 
     return True
