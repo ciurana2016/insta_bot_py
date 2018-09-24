@@ -1,5 +1,8 @@
 import os
+import time
+
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 
 
 def chrome_browser():
