@@ -59,6 +59,11 @@ class HashtagSearchJobTest(TestCase):
         soup = BeautifulSoup(html, 'html.parser')
         self.assertIn('programming', str(soup.title))
 
+    # TODO: need a function to extract the JSON from the sctipt tag
+    # THEN I CAN DO THE SINGLE FUNCTIONS THAT JUST CALL 
+    # a url, pasing the cookies from the selenium browser
+    # this small functions are managed by a main func that does the shit
+
     def test_like_on_posts(self):
         html = '<html></html>'
         liked = hashtag_search.like_post(html, 5)

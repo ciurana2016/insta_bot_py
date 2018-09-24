@@ -8,3 +8,7 @@ def get_response(hashtag):
         return r.text
     else:
         return r.status_code
+
+
+def main(browser, actions):
+    pass
