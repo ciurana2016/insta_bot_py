@@ -1,10 +1,10 @@
 """
-    1. Goes to the hastag page
-    2. Clicks on the first post (not from the most popular)
-    3. Likes the post
-    4. Leaves a comment
-    5. For now follows untill we are following 2000 people
-    6. Returns True
+1. Goes to the hastag page
+2. Clicks on the first post (not from the most popular)
+3. Likes the post
+4. Leaves a comment
+5. For now follows untill we are following 2000 people
+6. Returns True
 """
 import time
 from selenium.webdriver.common.keys import Keys
