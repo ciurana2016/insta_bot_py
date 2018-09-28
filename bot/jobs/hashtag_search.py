@@ -9,7 +9,7 @@
 import time
 from selenium.webdriver.common.keys import Keys
 
-from .utils import random_comment
+from .utils import random_comment, follow_user
 from bot.models import User
 
 
@@ -26,6 +26,11 @@ def run(browser, hashtag, sleep):
     post = browser.find_element_by_xpath('//div[@role="dialog"]')
     buttons = post.find_elements_by_tag_name('button')
 
+    # If we have multiple images, remove the button for next pic
+    potential_next_btn = buttons[1].get_attribute('tabindex')
+    if potential_next_btn != None:
+        buttons.pop(1)
+
     # Likes the post
     buttons[1].find_element_by_tag_name('span').click()
     time.sleep(sleep)
@@ -37,10 +42,9 @@ def run(browser, hashtag, sleep):
     time.sleep(sleep)
 
     # Follows
-    if User.objects.count() > 2000:
-        return True
-    
-    buttons[0].click()
+    links = post.find_elements_by_tag_name('a')
+    username = links[3].get_attribute('title')
+    follow_user(browser, username)
     time.sleep(sleep)
 
     return True

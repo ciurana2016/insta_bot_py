@@ -26,7 +26,7 @@ def run():
 
         random_job = choice(job_options)
         print(f'Starging job {random_job}')
-        eval(f'{random_job}(browser,"{hashtag.name}", 0.5)')
+        eval(f'{random_job}(browser,"{hashtag.name}", 2)')
         print(f'Ended job {random_job}')
 
         sleep_time = choice(range(120, 300))

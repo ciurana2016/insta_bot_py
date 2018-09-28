@@ -5,6 +5,7 @@ from django.test import TestCase
 from .browser import chrome_browser
 from .account.actions import login
 from .jobs import hashtag_search
+from .jobs.utils import random_comment, follow_user, unfollow_user
 
 from .models import User, Hashtag
 from account.models import Account
@@ -51,12 +52,48 @@ class BotModelsTest(TestCase):
             self.assertIn(hashtag.name, my_hashtags)
 
 
-class HashtagSearchJob(TestCase):
+class BotUtilsTest(TestCase):
 
-    #TODO: the button selection can fail because when the post has multiple
-    # images, there are more buttons to move from image to image
+    def setUp(self):
+        self.browser = chrome_browser()
+        login(self.browser)
 
-    def test_hastag_search_job(self):
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_random_comment(self):
+        comment = random_comment('test')
+        valid_choices = [
+            'Yeah test rocks!',
+            'Nice!',
+            '#test !',
+            'yup',
+            'so true'
+        ]
+        self.assertIn(comment, valid_choices)
+    
+    def test_follow_unfollow_users(self):
+        followed_users_count = User.objects.count()
+        followed = follow_user(self.browser, 'lacteosdiqueno')
+
+        self.assertTrue(followed)
+        self.assertTrue(User.objects.count() > followed_users_count)
+
+        # Check cant follow already followed user
+        follow = follow_user(self.browser, 'lacteosdiqueno')
+        self.assertFalse(follow)
+
+        # Check can unfollow users correctly
+        followed_users_count = User.objects.count()
+        unfollow = unfollow_user(self.browser, 'lacteosdiqueno')
+        unfollowed_user = User.objects.get(name='lacteosdiqueno')
+        self.assertTrue(unfollow)
+        self.assertTrue(unfollowed_user.following == False)
+    
+
+class HashtagSearchJobTest(TestCase):
+
+    def test_hashtag_search_job(self):
 
         browser = chrome_browser()
         login(browser)
@@ -72,9 +109,14 @@ class HashtagSearchJob(TestCase):
         post = browser.find_element_by_xpath('//div[@role="dialog"]')
         buttons = post.find_elements_by_tag_name('button')
 
+        # If we have multiple images, remove the button for next pic
+        potential_next_btn = buttons[1].get_attribute('tabindex')
+        if potential_next_btn != None:
+            buttons.pop(1)
+
         # Check the bot liked the post
         heart_element = buttons[1].find_element_by_tag_name('span')
-        # self.assertIn('filled', heart_element.get_attribute('class'))
+        self.assertIn('filled', heart_element.get_attribute('class'))
 
         # Check the bot posted a comment
         # First has to check if the textarea is not disabled
@@ -90,6 +132,5 @@ class HashtagSearchJob(TestCase):
             [comment.get_attribute('title') for comment in comments]
         )
 
-        # Check the bot followed if needed
-
+        # Aseume the bot followed correctly (this is tested elsewhere)
         browser.quit()
