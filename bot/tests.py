@@ -1,3 +1,4 @@
+import time
 from bs4 import BeautifulSoup
 from django.test import TestCase
 
@@ -6,6 +7,7 @@ from .account.actions import login
 from .jobs import hashtag_search
 
 from .models import User, Hashtag
+from account.models import Account
 
 
 class BrowserWorksTest(TestCase):
@@ -49,28 +51,45 @@ class BotModelsTest(TestCase):
             self.assertIn(hashtag.name, my_hashtags)
 
 
-class HashtagSearchJobTest(TestCase):
+class HashtagSearchJob(TestCase):
 
-    # TODO: need to read on mocks, cause I cant be making real requests
-    # to test logic, or Im doing something wrong
+    #TODO: the button selection can fail because when the post has multiple
+    # images, there are more buttons to move from image to image
 
-    def test_scraping_returns_what_we_are_looing_for(self):
-        html = hashtag_search.get_response('programming')
-        soup = BeautifulSoup(html, 'html.parser')
-        self.assertIn('programming', str(soup.title))
+    def test_hastag_search_job(self):
 
-    # TODO: need a function to extract the JSON from the sctipt tag
-    # THEN I CAN DO THE SINGLE FUNCTIONS THAT JUST CALL 
-    # a url, pasing the cookies from the selenium browser
-    # this small functions are managed by a main func that does the shit
+        browser = chrome_browser()
+        login(browser)
+        test_hashtag = 'programmers'
 
-    def test_like_on_posts(self):
-        html = '<html></html>'
-        liked = hashtag_search.like_post(html, 5)
-        self.assertTrue(liked)
-    
-    def test_coments_on_posts(self):
-        pass
-    
-    def test_follows_users_not_followed_yet(self):
-        pass
+        # Bot goes to hastag page and clicks on a post
+        hashtag_search.run(browser, test_hashtag, 0.5)
+
+        # Check the bot went to a post page
+        self.assertIn('/p/', browser.current_url)
+        self.assertIn(f'/?tagged={test_hashtag}', browser.current_url)
+
+        post = browser.find_element_by_xpath('//div[@role="dialog"]')
+        buttons = post.find_elements_by_tag_name('button')
+
+        # Check the bot liked the post
+        heart_element = buttons[1].find_element_by_tag_name('span')
+        # self.assertIn('filled', heart_element.get_attribute('class'))
+
+        # Check the bot posted a comment
+        # First has to check if the textarea is not disabled
+        while post.find_element_by_tag_name('textarea').get_attribute('disabled'):
+            print('Textarea is disabled, I\'m waiting ...')
+            time.sleep(0.5)
+
+        account = Account.objects.first()
+        comments = post.find_elements_by_class_name('notranslate')
+
+        self.assertIn(
+            account.username,
+            [comment.get_attribute('title') for comment in comments]
+        )
+
+        # Check the bot followed if needed
+
+        browser.quit()
