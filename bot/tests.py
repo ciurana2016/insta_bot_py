@@ -1,4 +1,5 @@
 import time
+import random
 from bs4 import BeautifulSoup
 from django.test import TestCase
 
@@ -9,6 +10,7 @@ from .jobs.utils import random_comment, follow_user, unfollow_user
 
 from .models import User, Hashtag
 from account.models import Account
+
 
 
 class BrowserWorksTest(TestCase):
@@ -91,6 +93,22 @@ class BotUtilsTest(TestCase):
         self.assertTrue(unfollowed_user.following == False)
     
 
+class RandomTester():
+    """
+    On random.choice([1,2,3]) output will allways be 2
+    Usage:
+    with RandomTester():
+        print(random.choice([0,1,0]))
+    Will return 1
+    """
+    def __enter__(self):
+        self.state = random.getstate()
+        random.seed(0)
+    
+    def __exit__(self, *args):
+        random.setstate(self.state)
+
+
 class HashtagSearchJobTest(TestCase):
 
     def test_hashtag_search_job(self):
@@ -100,7 +118,8 @@ class HashtagSearchJobTest(TestCase):
         test_hashtag = 'programmers'
 
         # Bot goes to hastag page and clicks on a post
-        hashtag_search.run(browser, test_hashtag, 0.5)
+        with RandomTester():
+            hashtag_search.like_and_comment(browser, test_hashtag, 0.5)
 
         # Check the bot went to a post page
         self.assertIn('/p/', browser.current_url)

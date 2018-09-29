@@ -2,19 +2,19 @@
 1. Goes to the hastag page
 2. Clicks on the first post (not from the most popular)
 3. Likes the post
-4. Leaves a comment
+4. Leaves a comment (33% chance of commenting [to be safe])
 5. For now follows untill we are following 2000 people
 6. Returns True
 """
 import time
+from random import choice
 from selenium.webdriver.common.keys import Keys
 
 from .utils import random_comment, follow_user
 from bot.models import User
 
 
-def run(browser, hashtag, sleep):
-    
+def like_and_comment(browser, hashtag, sleep):
     # Go to hashtag page
     browser.get(f'https://www.instagram.com/explore/tags/{hashtag}/')
 
@@ -35,11 +35,17 @@ def run(browser, hashtag, sleep):
     buttons[1].find_element_by_tag_name('span').click()
     time.sleep(sleep)
 
-    # Leaves a comment
-    textarea = post.find_element_by_tag_name('textarea')
-    textarea.send_keys(random_comment(hashtag))
-    textarea.send_keys(Keys.ENTER)
-    time.sleep(sleep)
+    # 33% Chance to leave a comment
+    if choice([0,1,0]) == 1:
+        textarea = post.find_element_by_tag_name('textarea')
+        textarea.send_keys(random_comment(hashtag))
+        textarea.send_keys(Keys.ENTER)
+        time.sleep(sleep)
+
+
+def run(browser, hashtag, sleep):
+    
+    like_and_comment(browser, hashtag, sleep)
 
     # Follows
     links = post.find_elements_by_tag_name('a')
