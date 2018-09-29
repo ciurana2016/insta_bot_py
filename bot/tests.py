@@ -109,7 +109,25 @@ class RandomTester():
         random.setstate(self.state)
 
 
+class RandomTesterTest(TestCase):
+
+    def test_random_tester_01(self):
+        with RandomTester():
+            self.assertTrue(random.choice([0,1,0]) == 1)
+
+    def test_random_tester_02(self):
+        with RandomTester():
+            self.assertTrue(random.choice([0,0,0,1]) == 1)
+    
+    def test_random_tester_03(self):
+        with RandomTester():
+            self.assertTrue(random.choice([0,0,0,1,0]) == 1)
+
+
 class HashtagSearchJobTest(TestCase):
+
+    def test_daily_limits(self):
+        pass
 
     def test_hashtag_search_job(self):
 
