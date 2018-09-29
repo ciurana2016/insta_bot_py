@@ -48,6 +48,7 @@ def run(browser, hashtag, sleep):
     like_and_comment(browser, hashtag, sleep)
 
     # Follows
+    post = browser.find_element_by_xpath('//div[@role="dialog"]')
     links = post.find_elements_by_tag_name('a')
     username = links[3].get_attribute('title')
     follow_user(browser, username)

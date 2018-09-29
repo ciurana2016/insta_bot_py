@@ -38,6 +38,4 @@ class AccountActions(models.Model):
         return f'{self.actions} performed on day {self.day}'
     
     def can_perform_actions(self, limit):
-        self.actions +=1
-        self.save()
         return True if self.actions < limit else False

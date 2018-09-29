@@ -41,6 +41,8 @@ def run():
         # TODO: refactor this, with function, times, and colors
         if random_job in action_jobs:
             if account_actions.can_perform_actions:
+                account_actions.actions += 1
+                account_actions.save()
                 print(f'Starging job {random_job}')
                 eval(f'{random_job}(browser,"{hashtag.name}", 2)')
                 print(f'Ended job {random_job}')  
