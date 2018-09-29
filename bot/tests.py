@@ -43,6 +43,9 @@ class BotModelsTest(TestCase):
         self.assertTrue(user_one.following)
 
     def test_save_and_retireve_hashtags(self):
+        for hashtag in Hashtag.objects.all():
+            hashtag.delete()
+
         my_hashtags = ['dogs', 'cats', 'birds']
 
         h1 = Hashtag.objects.create(name='dogs')
@@ -125,9 +128,6 @@ class RandomTesterTest(TestCase):
 
 
 class HashtagSearchJobTest(TestCase):
-
-    def test_daily_limits(self):
-        pass
 
     def test_hashtag_search_job(self):
 
