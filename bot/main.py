@@ -15,15 +15,16 @@ from .jobs.hashtag_search import run as run_hashtag_search
 
 def run():
 
-    # Actions per day count
-    account_actions, created = AccountActions.objects.get_or_create(
-        day=datetime.datetime.now()
-    )
-
     browser = chrome_browser()
     login(browser)
 
     while True:
+
+        # Actions per day count, prevents infinite actions
+        account_actions, created = AccountActions.objects.get_or_create(
+            day=datetime.datetime.now()
+        )
+
         # Jobs in this list need to be checked agains an action
         # counter before they can run
         action_jobs = [
@@ -38,20 +39,30 @@ def run():
         hashtag = choice(Hashtag.objects.all())
         random_job = choice(job_options)
 
-        # TODO: refactor this, with function, times, and colors
         if random_job in action_jobs:
             if account_actions.can_perform_actions:
                 account_actions.actions += 1
                 account_actions.save()
-                print(f'Starging job {random_job}')
-                eval(f'{random_job}(browser,"{hashtag.name}", 2)')
-                print(f'Ended job {random_job}')  
+                start_job(browser, random_job, hashtag.name)
         else:
-            print(f'Starging job {random_job}')
-            eval(f'{random_job}(browser,"{hashtag.name}", 2)')
-            print(f'Ended job {random_job}')
+            start_job(browser, random_job, hashtag.name)
 
-        sleep_time = choice(range(120, 300))
-        print(f'Going to sleep for {sleep_time} seconds')
-        time.sleep(sleep_time)
+        # Goes to sleep for a random amount of time
+        random_sleep()
 
+
+def random_sleep():
+    sleep_interval = 10
+    sleep_time = choice(range(120, 200))
+    remaining_time = sleep_time
+    print(f'Going to sleep for {sleep_time} seconds')
+    for stop in range(sleep_time//sleep_interval):
+        time.sleep(sleep_interval)
+        remaining_time -= sleep_interval
+        print(f'\t{remaining_time} seconds to start again ...')
+
+
+def start_job(browser, job_name, hashtag):
+    print(f'Starging job {job_name}')
+    eval(f'{job_name}(browser,"{hashtag}", 2)')
+    print(f'Ended job {job_name}')
