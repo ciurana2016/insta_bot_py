@@ -13,6 +13,14 @@ from .browser import chrome_browser
 from .account.actions import login
 from .jobs.hashtag_search import run as run_hashtag_search
 
+
+
+def start_job(browser, job_name, hashtag):
+    print(f'Starging job {job_name}')
+    eval(f'{job_name}(browser,"{hashtag}", 2)')
+    print(f'Ended job {job_name}')
+
+
 def run():
 
     browser = chrome_browser()
@@ -24,6 +32,12 @@ def run():
         account_actions, created = AccountActions.objects.get_or_create(
             day=datetime.datetime.now()
         )
+
+        # When created changes to True, we know it is a new day
+        if created:
+            new_post = post_of_the_day()
+            if new_post != 'not_implemented':
+                start_job(browser, new_post, '#coding')
 
         # Jobs in this list need to be checked agains an action
         # counter before they can run
@@ -51,6 +65,19 @@ def run():
         random_sleep()
 
 
+def post_of_the_day():
+    weekly_jobs = {
+        'Sunday' : 'not_implemented',
+        'Monday' : 'not_implemented',
+        'Tuesday' : 'not_implemented',
+        'Wednesday' : 'not_implemented',
+        'Thursday' : 'not_implemented',
+        'Friday' : 'not_implemented',
+        'Saturday' : 'not_implemented',
+    }
+    return weekly_jobs[datetime.date.today().strftime('%A')]
+
+
 def random_sleep():
     sleep_interval = 10
     sleep_time = choice(range(120, 200))
@@ -60,9 +87,3 @@ def random_sleep():
         time.sleep(sleep_interval)
         remaining_time -= sleep_interval
         print(f'\t{remaining_time} seconds to start again ...')
-
-
-def start_job(browser, job_name, hashtag):
-    print(f'Starging job {job_name}')
-    eval(f'{job_name}(browser,"{hashtag}", 2)')
-    print(f'Ended job {job_name}')

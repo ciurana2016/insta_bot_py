@@ -171,3 +171,9 @@ class HashtagSearchJobTest(TestCase):
 
         # Aseume the bot followed correctly (this is tested elsewhere)
         browser.quit()
+
+
+class BotMainTest(TestCase):
+
+    def test_select_post_of_the_day(self):
+        pass
