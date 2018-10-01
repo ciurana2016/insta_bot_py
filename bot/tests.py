@@ -95,6 +95,16 @@ class BotUtilsTest(TestCase):
         self.assertTrue(unfollow)
         self.assertTrue(unfollowed_user.following == False)
     
+    def test_create_post(self):
+        # Goes to instagram and clicks on upload
+        ## asert page change
+        # Dont know how selenium uploads a file
+        ## 
+        # It does all the form things inputs the text and submits
+        ## Assert we end up on our insta
+        ## Assert post has the text we wanted
+        pass
+    
 
 class RandomTester():
     """
@@ -125,6 +135,13 @@ class RandomTesterTest(TestCase):
     def test_random_tester_03(self):
         with RandomTester():
             self.assertTrue(random.choice([0,0,0,1,0]) == 1)
+
+
+class PostFromReditJobTest(TestCase):
+
+    def test_post_from_redit_job(self):
+        pass
+    
 
 
 class HashtagSearchJobTest(TestCase):
@@ -175,5 +192,7 @@ class HashtagSearchJobTest(TestCase):
 
 class BotMainTest(TestCase):
 
-    def test_select_post_of_the_day(self):
+    # Dont know how the F test this things
+
+    def one(self):
         pass

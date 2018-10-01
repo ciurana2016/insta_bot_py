@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 class Account(models.Model):
     username = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
-    created = models.DateField(default=datetime.date.today)
+    created = models.DateField()
 
     def __str__(self):
         return f'Instagram account: {self.username}'
@@ -18,7 +18,7 @@ class Account(models.Model):
         depending on how old the account is
         """
         base_actions = 65
-        today = datetime.datetime.now()
+        today = datetime.datetime.now().date()
         days_since_creation = (today - self.created).days
         base_actions += days_since_creation * 15 if days_since_creation < 33 else 435
         return base_actions

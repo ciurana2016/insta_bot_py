@@ -7,7 +7,7 @@ import time
 import datetime
 from random import choice
 
-from account.models import AccountActions
+from account.models import AccountActions, Account
 from .models import Hashtag
 from .browser import chrome_browser
 from .account.actions import login
@@ -25,6 +25,7 @@ def run():
 
     browser = chrome_browser()
     login(browser)
+    account = Account.objects.first()
 
     while True:
 
@@ -54,10 +55,12 @@ def run():
         random_job = choice(job_options)
 
         if random_job in action_jobs:
-            if account_actions.can_perform_actions:
+            if account_actions.can_perform_actions(account.get_limit()):
                 account_actions.actions += 1
                 account_actions.save()
                 start_job(browser, random_job, hashtag.name)
+            else:
+                print('CANT PERFORM MORE ACTIONS TODAY DUDE !')
         else:
             start_job(browser, random_job, hashtag.name)
 

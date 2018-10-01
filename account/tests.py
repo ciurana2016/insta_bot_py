@@ -20,19 +20,19 @@ class TestAccountModel(TestCase):
         
     def test_calculates_action_limit(self):
         account = Account.objects.first()
-        account.created = datetime.datetime.now()
+        account.created = datetime.datetime.now().date()
         account.save()
         self.assertTrue(account.get_limit() == 65)
 
-        account.created = datetime.datetime.now() - datetime.timedelta(days=1)
+        account.created = datetime.datetime.now().date() - datetime.timedelta(days=1)
         account.save()
         self.assertTrue(account.get_limit() == 80)
 
-        account.created = datetime.datetime.now() - datetime.timedelta(days=5)
+        account.created = datetime.datetime.now().date() - datetime.timedelta(days=5)
         account.save()
         self.assertTrue(account.get_limit() == 140)
 
-        account.created = datetime.datetime.now() - datetime.timedelta(days=300)
+        account.created = datetime.datetime.now().date() - datetime.timedelta(days=300)
         account.save()
         self.assertTrue(account.get_limit() == 500)
 
